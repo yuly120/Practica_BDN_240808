@@ -12,6 +12,7 @@ ALTER USER 'marco.ramirez'@'%' IDENTIFIED BY 'qwerty123';
 GRANT ALL PRIVILEGES ON *.* TO 'yuliana.mendoza'@'%' WITH GRANT OPTION;
 
 /* CREACION DE ROLES */
+CREATE ROLE IF NOT EXISTS 'superadmin';
 CREATE ROLE IF NOT EXISTS 'admin';
 CREATE ROLE IF NOT EXISTS 'seller';
 CREATE ROLE IF NOT EXISTS 'buyer';
@@ -20,6 +21,7 @@ CREATE ROLE IF NOT EXISTS 'user_not_registered';
 CREATE ROLE IF NOT EXISTS 'support';
 
 /* ASIGNAR PRIVILEGIOS A LOS ROLES */
+GRANT ALL PRIVILEGES ON *.* TO 'superadmin' WITH GRANT OPTION;
 GRANT ALL PRIVILEGES ON db_test.* TO 'admin';
 GRANT SELECT, INSERT, UPDATE ON db_test.tb_users TO 'support';
 GRANT SELECT, INSERT, UPDATE ON db_test.tb_products TO 'seller';
@@ -33,8 +35,8 @@ GRANT SELECT ON db_test.vw_total_products_by_category TO 'seller','support';
 /* ASIGNAR LOS ROLES Y ACTIVARLOS POR DEFECTO */
 GRANT 'admin' TO 'marco.ramirez'@'%';
 SET DEFAULT ROLE 'admin' TO 'marco.ramirez'@'%';
-GRANT 'support' TO 'yuliana.mendoza'@'%';
-SET DEFAULT ROLE 'support' TO 'yuliana.mendoza'@'%';
+GRANT 'superadmin' TO 'yuliana.mendoza'@'%';
+SET DEFAULT ROLE 'superadmin' TO 'yuliana.mendoza'@'%';
 GRANT 'seller' TO 'hector.morales'@'%';
 SET DEFAULT ROLE 'seller' TO 'hector.morales'@'%';
 GRANT 'seller' TO 'sharely.gonzalez'@'%';
