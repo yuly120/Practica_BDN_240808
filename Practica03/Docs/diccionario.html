@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>db_test - Diccionario de Base de Datos Completo | Yuliana Mendoza (240808)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-app: #f4f6f9;
+            --bg-panel: #ffffff;
+            --bg-subtle: #f8fafc;
+            --bg-code: #0f172a;
+            --border-light: #e2e8f0;
+            --border-med: #cbd5e1;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --brand-teal: #0f766e;
+            --brand-teal-light: #ccfbf1;
+            --brand-teal-dark: #115e59;
+            --accent-amber: #d97706;
+            --accent-amber-bg: #fef3c7;
+            --accent-blue: #1d4ed8;
+            --accent-blue-bg: #dbeafe;
+            --accent-violet: #6d28d9;
+            --accent-violet-bg: #ede9fe;
+            --accent-emerald: #047857;
+            --accent-emerald-bg: #d1fae5;
+            --accent-rose: #be123c;
+            --accent-rose-bg: #ffe4e6;
+            --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation & Author Banner */
+        .topbar {
+            background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+            color: #ffffff;
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 3px solid #14b8a6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(20, 184, 166, 0.2);
+            border: 1.5px solid #2dd4bf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            color: #5eead4;
+        }
+
+        .brand-info h1 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill-mysql {
+            background: rgba(45, 212, 191, 0.18);
+            color: #5eead4;
+            border: 1px solid rgba(45, 212, 191, 0.4);
+            font-size: 11px;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .brand-info p {
+            font-size: 12.5px;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        .author-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 10px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #14b8a6;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .author-meta {
+            font-size: 12px;
+        }
+
+        .author-meta strong {
+            display: block;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .author-meta span {
+            color: #99f6e4;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+        }
+
+        /* Toast Notification (No alert()) */
+        .toast-banner {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: #ffffff;
+            border: 1px solid #14b8a6;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+            z-index: 999;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        .toast-banner.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Navigation Tabs Bar */
+        .nav-strip {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-light);
+            padding: 10px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--text-primary);
+        }
+
+        .nav-btn.active {
+            background: var(--brand-teal);
+            color: #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-btn .count-chip {
+            background: rgba(15, 23, 42, 0.1);
+            padding: 1px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .nav-btn.active .count-chip {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+
+        .global-search-box {
+            position: relative;
+            min-width: 280px;
+        }
+
+        .global-search-box input {
+            width: 100%;
+            padding: 8px 12px 8px 34px;
+            border-radius: 8px;
+            border: 1px solid var(--border-med);
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--bg-subtle);
+            outline: none;
+        }
+
+        .global-search-box input:focus {
+            border-color: var(--brand-teal);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+        }
+
+        .global-search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 22px 28px 40px;
+            flex: 1;
+        }
+
+        /* KPI Summary Strip */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .kpi-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 3px solid var(--brand-teal);
+        }
+
+        .kpi-card.amber { border-top-color: var(--accent-amber); }
+        .kpi-card.blue { border-top-color: var(--accent-blue); }
+        .kpi-card.violet { border-top-color: var(--accent-violet); }
+        .kpi-card.emerald { border-top-color: var(--accent-emerald); }
+
+        .kpi-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 4px 0;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* View Sections */
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Split Dictionary Explorer */
+        .explorer-layout {
+            display: grid;
+            grid-template-columns: 310px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .explorer-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .object-sidebar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 86px;
+            max-height: calc(100vh - 110px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+            background: var(--bg-subtle);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .filter-pill {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .filter-pill.active {
+            background: #ffffff;
+            color: var(--brand-teal);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .object-list {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 4px;
+        }
+
+        .obj-item {
+            padding: 9px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.12s ease;
+        }
+
+        .obj-item:hover {
+            background: var(--bg-subtle);
+            border-color: var(--border-light);
+        }
+
+        .obj-item.active {
+            background: #f0fdfa;
+            border-color: #5eead4;
+            color: var(--brand-teal-dark);
+        }
+
+        .obj-name-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .obj-name {
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .obj-meta-mini {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tag-type {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-family: 'Fira Code', monospace;
+            flex-shrink: 0;
+        }
+
+        .tag-table { background: var(--accent-blue-bg); color: var(--accent-blue); }
+        .tag-view { background: var(--accent-emerald-bg); color: var(--accent-emerald); }
+
+        /* Detail Card */
+        .detail-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .detail-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .detail-title h2 {
+            font-family: 'Fira Code', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .detail-title p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .row-count-badge {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .subtab-bar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-light);
+            background: #ffffff;
+        }
+
+        .subtab {
+            padding: 7px 14px;
+            border-radius: 7px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-subtle);
+            color: var(--text-secondary);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .subtab.active {
+            background: var(--text-primary);
+            color: #ffffff;
+            border-color: var(--text-primary);
+        }
+
+        /* Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: top;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .mono { font-family: 'Fira Code', monospace; }
+        .datatype { font-family: 'Fira Code', monospace; color: #0369a1; font-size: 12px; font-weight: 500; }
+
+        .key-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-family: 'Fira Code', monospace;
+            font-size: 10.5px;
+            font-weight: 700;
+        }
+
+        .key-pk { background: var(--accent-amber-bg); color: #92400e; border: 1px solid #fcd34d; }
+        .key-fk { background: var(--accent-blue-bg); color: #1e40af; border: 1px solid #93c5fd; }
+        .key-uk { background: var(--accent-violet-bg); color: #5b21b6; border: 1px solid #c4b5fd; }
+        .key-view { background: var(--accent-emerald-bg); color: #065f46; border: 1px solid #6ee7b7; }
+
+        /* SQL Block */
+        .sql-block-wrap {
+            position: relative;
+            margin: 16px 24px 24px;
+        }
+
+        .sql-block {
+            background: var(--bg-code);
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 16px 18px;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid #1e293b;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* Triggers Master Grid */
+        .triggers-toolbar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .trigger-group-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .trigger-group-head {
+            background: #f8fafc;
+            padding: 13px 20px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .trigger-group-head h3 {
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trigger-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 14px;
+            padding: 16px 20px;
+        }
+
+        .trigger-box {
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .trigger-box-top {
+            padding: 10px 14px;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trigger-box-top code {
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--brand-teal-dark);
+        }
+
+        .event-tag {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .ev-insert { background: #dcfce7; color: #166534; }
+        .ev-update { background: #fef3c7; color: #92400e; }
+        .ev-delete { background: #ffe4e6; color: #9f1239; }
+
+        .trigger-code {
+            background: #0f172a;
+            color: #a7f3d0;
+            font-family: 'Fira Code', monospace;
+            font-size: 11.5px;
+            padding: 12px 14px;
+            margin: 0;
+            white-space: pre-wrap;
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        /* ERD Interactive Canvas */
+        .erd-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .erd-controls {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .erd-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .erd-viewport {
+            position: relative;
+            width: 100%;
+            height: 760px;
+            overflow: auto;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .erd-stage {
+            position: relative;
+            width: 2450px;
+            height: 1580px;
+            transform-origin: 0 0;
+        }
+
+        #erd-svg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2450px;
+            height: 1580px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .erd-node {
+            position: absolute;
+            width: 265px;
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+            z-index: 2;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            cursor: pointer;
+        }
+
+        .erd-node:hover, .erd-node.highlighted {
+            border-color: var(--brand-teal);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2), 0 8px 18px rgba(15, 23, 42, 0.12);
+            z-index: 5;
+        }
+
+        .erd-node-head {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 8px 8px 0 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .erd-node-head span.rows-mini {
+            background: rgba(45, 212, 191, 0.2);
+            color: #5eead4;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .erd-node-cols {
+            padding: 6px 0;
+            max-height: 210px;
+            overflow-y: auto;
+        }
+
+        .erd-col-line {
+            padding: 3px 10px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+
+        .erd-col-line:last-child { border-bottom: none; }
+
+        /* Users & Population Section */
+        .section-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
+
+        .section-card-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border-light);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-card-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .highlight-row td {
+            background-color: #f0fdfa !important;
+            border-top: 1.5px solid #5eead4;
+            border-bottom: 1.5px solid #5eead4;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 7px;
+            border: 1px solid var(--border-med);
+            background: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .btn-sm:hover {
+            background: var(--bg-subtle);
+        }
+
+        .btn-teal {
+            background: var(--brand-teal);
+            color: #ffffff;
+            border-color: var(--brand-teal);
+        }
+
+        .btn-teal:hover {
+            background: var(--brand-teal-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toastBanner" class="toast-banner"></div>
+
+    <header class="topbar">
+        <div class="brand-area">
+            <div class="brand-badge">DB</div>
+            <div class="brand-info">
+                <h1>
+                    Diccionario de Datos: <code>db_test</code>
+                    <span class="pill-mysql">MySQL 8.0 &bull; InnoDB</span>
+                </h1>
+                <p>Esquema Completo Auditado: 25 Tablas, 26 Vistas, 72 Triggers y Control de Población</p>
+            </div>
+        </div>
+
+        <div class="author-card">
+            <div class="author-avatar">YM</div>
+            <div class="author-meta">
+                <strong>Yuliana Mendoza &bull; Super Admin</strong>
+                <span>Matrícula: 240808 &bull; Rol MySQL: rol_admin</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="nav-strip">
+        <div class="nav-tabs">
+            <button class="nav-btn active" data-tab="dict" onclick="switchTab('dict')">
+                Diccionario (Tablas y Vistas) <span class="count-chip">51</span>
+            </button>
+            <button class="nav-btn" data-tab="triggers" onclick="switchTab('triggers')">
+                Triggers Completos <span class="count-chip">72</span>
+            </button>
+            <button class="nav-btn" data-tab="erd" onclick="switchTab('erd')">
+                Diagrama Entidad-Relación <span class="count-chip">25 Tablas</span>
+            </button>
+            <button class="nav-btn" data-tab="population" onclick="switchTab('population')">
+                Población de Datos y Usuarios <span class="count-chip">9 Cuentas</span>
+            </button>
+        </div>
+
+        <div class="global-search-box">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="globalSearch" placeholder="Buscar tabla, vista, columna o trigger..." oninput="handleGlobalSearch()">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- KPI Summary Strip -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">Tablas Físicas (InnoDB)</span>
+                <span class="kpi-value">25</span>
+                <span class="kpi-sub">Esquema normalizado en <code>db_test</code></span>
+            </div>
+            <div class="kpi-card emerald">
+                <span class="kpi-label">Vistas SQL Activas</span>
+                <span class="kpi-value">26</span>
+                <span class="kpi-sub">1 analítica + 25 de trazabilidad</span>
+            </div>
+            <div class="kpi-card amber">
+                <span class="kpi-label">Triggers de Auditoría</span>
+                <span class="kpi-value">72</span>
+                <span class="kpi-sub">24 tablas &times; 3 eventos (INSERT/UPDATE/DELETE)</span>
+            </div>
+            <div class="kpi-card blue">
+                <span class="kpi-label">Usuarios Validados</span>
+                <span class="kpi-value">7,500</span>
+                <span class="kpi-sub">Relación 1:1 <code>tb_users</code> &harr; <code>tb_people</code></span>
+            </div>
+            <div class="kpi-card violet">
+                <span class="kpi-label">Catálogo de Productos</span>
+                <span class="kpi-value">14,005</span>
+                <span class="kpi-sub">13,704 activos &bull; 301 dados de baja</span>
+            </div>
+        </div>
+
+        <!-- TAB 1: DICTIONARY EXPLORER (25 TABLES + 26 VIEWS) -->
+        <section id="view-dict" class="view-section active">
+            <div class="explorer-layout">
+                <aside class="object-sidebar">
+                    <div class="filter-pills">
+                        <button class="filter-pill active" data-filter="ALL" onclick="setSidebarFilter('ALL')">Todos (51)</button>
+                        <button class="filter-pill" data-filter="TABLE" onclick="setSidebarFilter('TABLE')">Tablas (25)</button>
+                        <button class="filter-pill" data-filter="VIEW" onclick="setSidebarFilter('VIEW')">Vistas (26)</button>
+                    </div>
+                    <div class="object-list" id="sidebarList"></div>
+                </aside>
+
+                <div class="detail-card" id="detailPanel">
+                    <div class="detail-header">
+                        <div class="detail-title">
+                            <h2 id="detTitle">tb_users</h2>
+                            <p id="detDesc">Descripción de la tabla...</p>
+                        </div>
+                        <div id="detStatsBadge"></div>
+                    </div>
+
+                    <div class="subtab-bar">
+                        <button class="subtab active" id="subtab-cols" onclick="switchSubtab('cols')">Estructura de Columnas</button>
+                        <button class="subtab" id="subtab-code" onclick="switchSubtab('code')">Triggers / Definición SQL</button>
+                    </div>
+
+                    <div id="subpanel-cols" class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Columna</th>
+                                    <th>Tipo de Dato</th>
+                                    <th>Llave</th>
+                                    <th>Nulo</th>
+                                    <th>Default</th>
+                                    <th>AutoInc</th>
+                                    <th>Descripción y Referencia</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detColsBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="subpanel-code" style="display:none;">
+                        <div id="detCodeContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ALL 72 TRIGGERS COMPLETE VIEW -->
+        <section id="view-triggers" class="view-section">
+            <div class="triggers-toolbar">
+                <div>
+                    <h2 style="font-size:17px; font-weight:800;">Matriz Completa de los 72 Triggers de Auditoría DML</h2>
+                    <p style="font-size:13px; color:var(--text-secondary);">Implementados en las 24 tablas operativas (excluyendo <code>tb_logs</code> para evitar recursividad) registrando cada <code>AFTER INSERT</code>, <code>AFTER UPDATE</code> y <code>AFTER DELETE</code>.</p>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <select id="triggerEventFilter" class="btn-sm" onchange="renderAllTriggers()">
+                        <option value="ALL">Todos los eventos (72)</option>
+                        <option value="INSERT">Solo AFTER INSERT (24)</option>
+                        <option value="UPDATE">Solo AFTER UPDATE (24)</option>
+                        <option value="DELETE">Solo AFTER DELETE (24)</option>
+                    </select>
+                    <button class="btn-sm btn-teal" onclick="copyAllTriggersSQL()">Copiar Script SQL (72 Triggers)</button>
+                </div>
+            </div>
+
+            <div id="allTriggersContainer"></div>
+        </section>
+
+        <!-- TAB 3: INTERACTIVE ERD DIAGRAM -->
+        <section id="view-erd" class="view-section">
+            <div class="erd-panel">
+                <div class="erd-controls">
+                    <div class="erd-legend">
+                        <strong>Diagrama Entidad-Relación (25 Tablas):</strong>
+                        <span><span class="key-badge key-pk">PK</span> Llave Primaria</span>
+                        <span><span class="key-badge key-fk">FK</span> Llave Foránea</span>
+                        <span><span class="key-badge key-uk">UK</span> Única</span>
+                        <span style="color:var(--brand-teal); font-weight:600;">Haz clic sobre cualquier tabla para resaltar sus relaciones</span>
+                    </div>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <button class="btn-sm" onclick="zoomERD(-0.1)">&minus; Alejar</button>
+                        <span id="zoomLabel" class="mono" style="font-size:12px; font-weight:700; min-width:48px; text-align:center;">85%</span>
+                        <button class="btn-sm" onclick="zoomERD(0.1)">+ Acercar</button>
+                        <button class="btn-sm" onclick="resetERD()">Restablecer</button>
+                    </div>
+                </div>
+
+                <div class="erd-viewport" id="erdViewport">
+                    <div class="erd-stage" id="erdStage">
+                        <svg id="erd-svg-lines"></svg>
+                        <div id="erdNodesLayer"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: DATA POPULATION & MYSQL USERS -->
+        <section id="view-population" class="view-section">
+            <div class="section-card">
+                <div class="section-card-header">
+                    <div>
+                        <h2>Control de Usuarios y Roles MySQL (`db_test`)</h2>
+                        <p style="font-size:12.5px; color:var(--text-secondary);">Cuentas configuradas en el servidor con privilegios asignados por rol.</p>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <select id="roleFilterSelect" class="btn-sm" onchange="renderUsersTable()">
+                            <option value="ALL">Todos los roles (9)</option>
+                            <option value="rol_admin">rol_admin (2)</option>
+                            <option value="rol_vendedor">rol_vendedor (4)</option>
+                            <option value="rol_cliente">rol_cliente (3)</option>
+                        </select>
+                        <button class="btn-sm" id="togglePassBtn" onclick="togglePasswords()">Mostrar Contraseñas</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Usuario</th>
+                                <th>Nombre Completo</th>
+                                <th>Rol Asignado</th>
+                                <th>Rol MySQL</th>
+                                <th>Contraseña</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-card-header">
+                    <div>
+                        <h2>Auditoría de Población de Datos por Tabla (25 Tablas)</h2>
+                        <p style="font-size:12.5px; color:var(--text-secondary);">Verificación de volúmenes cargados en <code>db_test</code> para validar el poblamiento sin requerir migración manual.</p>
+                    </div>
+                    <span class="row-count-badge">Total Registros Auditados: +56,800</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tabla</th>
+                                <th>Categoría</th>
+                                <th>Registros Ingresados</th>
+                                <th>Estado de Población</th>
+                                <th>Observaciones de Integridad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="populationTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+<script>
+// Helper: Copy text safely inside sandboxed iframes without alert()
+function copyToClipboardSafe(text, message) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showToast(message || "Copiado al portapapeles correctamente.");
+    } catch (err) {
+        showToast("No se pudo copiar automáticamente.");
+    }
+    document.body.removeChild(textarea);
+}
+
+function showToast(msg) {
+    const banner = document.getElementById('toastBanner');
+    banner.textContent = msg;
+    banner.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => {
+        banner.classList.remove('show');
+    }, 2600);
+}
+
+// 1. MYSQL USERS DATA (WITH YULIANA MENDOZA AS LEAD SUPER ADMIN)
+const mysqlUsers = [
+    { user: "yuliana_mendoza", fullName: "Yuliana Mendoza", assignedRole: "Super Admin", mysqlRole: "rol_admin", pass: "240808", isOwner: true },
+    { user: "hector_morales", fullName: "Héctor Morales", assignedRole: "Seller", mysqlRole: "rol_vendedor", pass: "240764", isOwner: false },
+    { user: "marco_ramirez", fullName: "Marco Ramírez", assignedRole: "Admin", mysqlRole: "rol_admin", pass: "qwerty123", isOwner: false },
+    { user: "oscar_sampayo", fullName: "Óscar Sampayo", assignedRole: "Seller", mysqlRole: "rol_vendedor", pass: "240428", isOwner: false },
+    { user: "sharely_velazquez", fullName: "Sharely Velázquez", assignedRole: "Seller", mysqlRole: "rol_vendedor", pass: "240639", isOwner: false },
+    { user: "totis_soto", fullName: "Totis Soto", assignedRole: "Seller / Support", mysqlRole: "rol_vendedor", pass: "240628", isOwner: false },
+    { user: "adrian_rios", fullName: "Adrián Ríos", assignedRole: "Buyer", mysqlRole: "rol_cliente", pass: "240165", isOwner: false },
+    { user: "app_web", fullName: "App Web", assignedRole: "System / Buyer", mysqlRole: "rol_cliente", pass: "pw_app", isOwner: false },
+    { user: "app_movil", fullName: "App Móvil", assignedRole: "System / Buyer", mysqlRole: "rol_cliente", pass: "pw_app", isOwner: false }
+];
+
+// 2. EXACT 25 TABLES WITH POPULATION METRICS
+const dbData = {
+    "tb_addresses": {
+        "type": "TABLE",
+        "category": "Operativa / Clientes",
+        "rows": "7,500",
+        "status": "Poblada (100%)",
+        "note": "1 dirección verificada por usuario registrado en tb_users",
+        "desc": "Tabla de entidad tb_addresses del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Dirección ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "street", "type": "TEXT", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Calle y número"},
+            {"name": "city", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Ciudad"},
+            {"name": "state", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Estado"},
+            {"name": "zip_code", "type": "VARCHAR(10)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Código Postal"},
+            {"name": "country", "type": "VARCHAR(50)", "key": "", "null": "YES", "default": "Mexico", "auto": "NO", "desc": "País"}
+        ]
+    },
+    "tb_audit_logins": {
+        "type": "TABLE",
+        "category": "Seguridad / Auditoría",
+        "rows": "1,240",
+        "status": "Poblada (Activa)",
+        "note": "Bitácora de inicios de sesión con dirección IP y timestamp",
+        "desc": "Tabla de entidad tb_audit_logins del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "ID de auditoría"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "login_time", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha de inicio de sesión"},
+            {"name": "ip_address", "type": "VARCHAR(45)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Dirección IP"}
+        ]
+    },
+    "tb_cart_items": {
+        "type": "TABLE",
+        "category": "Transaccional / Carrito",
+        "rows": "680",
+        "status": "Poblada (Activa)",
+        "note": "Artículos agregados en carritos activos con precio unitario",
+        "desc": "Tabla de entidad tb_cart_items del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Ítem ID"},
+            {"name": "cart_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_carts.id"},
+            {"name": "product_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_products.id"},
+            {"name": "quantity", "type": "INT", "key": "", "null": "NO", "default": "1", "auto": "NO", "desc": "Cantidad"},
+            {"name": "unit_price", "type": "DECIMAL(10,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Precio unitario"}
+        ]
+    },
+    "tb_carts": {
+        "type": "TABLE",
+        "category": "Transaccional / Carrito",
+        "rows": "320",
+        "status": "Poblada (Activa)",
+        "note": "Carritos de compra asociados a cuentas de clientes",
+        "desc": "Tabla de entidad tb_carts del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Carrito ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "created_at", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha de creación"},
+            {"name": "status", "type": "BIT(1)", "key": "", "null": "YES", "default": "b'1'", "auto": "NO", "desc": "Estado activo"}
+        ]
+    },
+    "tb_categories": {
+        "type": "TABLE",
+        "category": "Catálogo Jerárquico",
+        "rows": "100",
+        "status": "Poblada (100%)",
+        "note": "100 categorías con jerarquía autorreferenciada (sup_id_category)",
+        "desc": "Tabla jerárquica de categorías y subniveles del esquema db_test (compatible con CSV de 100 categorías).",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Categoría ID"},
+            {"name": "name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Nombre categoría"},
+            {"name": "description", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Descripción"},
+            {"name": "sup_id_category", "type": "INT", "key": "FK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Autorreferencia Jerárquica -> tb_categories.id (NULL = Raíz)"},
+            {"name": "status", "type": "BIT(1)", "key": "", "null": "YES", "default": "b'1'", "auto": "NO", "desc": "Estado activo"}
+        ]
+    },
+    "tb_coupons": {
+        "type": "TABLE",
+        "category": "Catálogo / Promociones",
+        "rows": "25",
+        "status": "Poblada (100%)",
+        "note": "Códigos promocionales únicos (UK) con vigencia y porcentaje",
+        "desc": "Tabla de entidad tb_coupons del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Cupón ID"},
+            {"name": "code", "type": "VARCHAR(30)", "key": "UK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Código promocional"},
+            {"name": "discount_percent", "type": "DECIMAL(5,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Porcentaje de descuento"},
+            {"name": "valid_until", "type": "DATETIME", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Vigencia"},
+            {"name": "status", "type": "BIT(1)", "key": "", "null": "YES", "default": "b'1'", "auto": "NO", "desc": "Estado activo"}
+        ]
+    },
+    "tb_discounts": {
+        "type": "TABLE",
+        "category": "Catálogo / Promociones",
+        "rows": "150",
+        "status": "Poblada (100%)",
+        "note": "Descuentos directos aplicados a productos seleccionados",
+        "desc": "Tabla de entidad tb_discounts del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Descuento ID"},
+            {"name": "product_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_products.id"},
+            {"name": "discount_percentage", "type": "DECIMAL(5,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Porcentaje descuento"},
+            {"name": "start_date", "type": "DATETIME", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Fecha inicio"},
+            {"name": "end_date", "type": "DATETIME", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Fecha fin"}
+        ]
+    },
+    "tb_inventory_movements": {
+        "type": "TABLE",
+        "category": "Operativa / Inventario",
+        "rows": "14,005",
+        "status": "Poblada (100%)",
+        "note": "Movimientos iniciales de entrada (IN) sincronizados con tb_products",
+        "desc": "Tabla de entidad tb_inventory_movements del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Movimiento ID"},
+            {"name": "product_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_products.id"},
+            {"name": "type", "type": "VARCHAR(10)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Tipo movimiento (IN/OUT)"},
+            {"name": "quantity", "type": "INT", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Cantidad ajustada"},
+            {"name": "reason", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Motivo"},
+            {"name": "movement_date", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha movimiento"}
+        ]
+    },
+    "tb_logs": {
+        "type": "TABLE",
+        "category": "Auditoría Central",
+        "rows": "29,000+",
+        "status": "Bitácora Activa",
+        "note": "Receptora de los 72 triggers DML (INSERT, UPDATE, DELETE)",
+        "desc": "Tabla bitácora receptora de auditoría DML del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Log ID"},
+            {"name": "table_name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Tabla auditada"},
+            {"name": "operation_type", "type": "ENUM('INSERT','UPDATE','DELETE')", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Operación"},
+            {"name": "user_connection", "type": "VARCHAR(100)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Usuario conexión"},
+            {"name": "description", "type": "TEXT", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Detalle auditado"},
+            {"name": "operation_date", "type": "TIMESTAMP", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha log"},
+            {"name": "status", "type": "VARCHAR(20)", "key": "", "null": "YES", "default": "SUCCESS", "auto": "NO", "desc": "Resultado auditado"}
+        ]
+    },
+    "tb_notifications": {
+        "type": "TABLE",
+        "category": "Operativa / Clientes",
+        "rows": "850",
+        "status": "Poblada (Activa)",
+        "note": "Alertas de órdenes, envíos y promociones enviadas a usuarios",
+        "desc": "Tabla de entidad tb_notifications del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Notificación ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "title", "type": "VARCHAR(100)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Título"},
+            {"name": "message", "type": "TEXT", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Mensaje"},
+            {"name": "is_read", "type": "BIT(1)", "key": "", "null": "YES", "default": "b'0'", "auto": "NO", "desc": "Estado de lectura"},
+            {"name": "created_at", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha envío"}
+        ]
+    },
+    "tb_order_coupons": {
+        "type": "TABLE",
+        "category": "Transaccional / Órdenes",
+        "rows": "95",
+        "status": "Poblada (100%)",
+        "note": "Relación N:M entre órdenes y cupones redimidos",
+        "desc": "Tabla de entidad tb_order_coupons del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "ID cupón orden"},
+            {"name": "order_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_orders.id"},
+            {"name": "coupon_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_coupons.id"}
+        ]
+    },
+    "tb_order_details": {
+        "type": "TABLE",
+        "category": "Transaccional / Órdenes",
+        "rows": "1,420",
+        "status": "Poblada (100%)",
+        "note": "Desglose de líneas de producto y precio histórico por orden",
+        "desc": "Tabla de entidad tb_order_details del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Detalle ID"},
+            {"name": "order_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_orders.id"},
+            {"name": "product_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_products.id"},
+            {"name": "quantity", "type": "INT", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Cantidad comprada"},
+            {"name": "unit_price", "type": "DECIMAL(10,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Precio histórico"}
+        ]
+    },
+    "tb_orders": {
+        "type": "TABLE",
+        "category": "Transaccional / Órdenes",
+        "rows": "540",
+        "status": "Poblada (100%)",
+        "note": "Pedidos vinculados a tb_users y direcciones en tb_addresses",
+        "desc": "Tabla de entidad tb_orders del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Orden ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "address_id", "type": "INT", "key": "FK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_addresses.id"},
+            {"name": "total_amount", "type": "DECIMAL(10,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Monto total"},
+            {"name": "status", "type": "VARCHAR(30)", "key": "", "null": "YES", "default": "pending", "auto": "NO", "desc": "Estado orden"},
+            {"name": "created_at", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha creación"}
+        ]
+    },
+    "tb_payment_methods": {
+        "type": "TABLE",
+        "category": "Financiera / Pagos",
+        "rows": "1,100",
+        "status": "Poblada (100%)",
+        "note": "Tarjetas, cuentas y métodos registrados por compradores",
+        "desc": "Tabla de entidad tb_payment_methods del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Método pago ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "type", "type": "VARCHAR(30)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Tipo método"},
+            {"name": "provider", "type": "VARCHAR(50)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Proveedor"},
+            {"name": "account_number", "type": "VARCHAR(50)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Número cuenta/tarjeta"}
+        ]
+    },
+    "tb_payments": {
+        "type": "TABLE",
+        "category": "Financiera / Pagos",
+        "rows": "540",
+        "status": "Poblada (100%)",
+        "note": "Pagos asociados 1:1 con órdenes registradas en tb_orders",
+        "desc": "Tabla de entidad tb_payments del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Pago ID"},
+            {"name": "order_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_orders.id"},
+            {"name": "payment_method_id", "type": "INT", "key": "FK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_payment_methods.id"},
+            {"name": "amount", "type": "DECIMAL(10,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Monto cobrado"},
+            {"name": "payment_date", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha de pago"},
+            {"name": "status", "type": "VARCHAR(20)", "key": "", "null": "YES", "default": "completed", "auto": "NO", "desc": "Estado del pago"}
+        ]
+    },
+    "tb_people": {
+        "type": "TABLE",
+        "category": "Núcleo / Identidad",
+        "rows": "7,500",
+        "status": "Poblada (100%)",
+        "note": "Relación 1:1 estricta con tb_users (7,500 perfiles demográficos)",
+        "desc": "Tabla de entidad tb_people del esquema db_test (Relación 1:1 con tb_users).",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Persona ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Clave Foránea Única (1:1) -> tb_users.id"},
+            {"name": "first_name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Nombre(s)"},
+            {"name": "last_name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Apellido(s)"},
+            {"name": "gender", "type": "CHAR(1)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Género"},
+            {"name": "country", "type": "VARCHAR(50)", "key": "", "null": "YES", "default": "Mexico", "auto": "NO", "desc": "País"},
+            {"name": "birth_date", "type": "DATE", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Fecha nacimiento"},
+            {"name": "phone", "type": "VARCHAR(20)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Teléfono contacto"}
+        ]
+    },
+    "tb_products": {
+        "type": "TABLE",
+        "category": "Núcleo / Catálogo",
+        "rows": "14,005",
+        "status": "Poblada (100%)",
+        "note": "13,704 activos y 301 descontinuados; SKU único y precios auditados",
+        "desc": "Tabla maestra de productos vinculada a subcategorías y proveedores.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Producto ID (Estandarizado a minúsculas)"},
+            {"name": "subcategory_id", "type": "INT", "key": "FK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_subcategories.id"},
+            {"name": "supplier_id", "type": "INT", "key": "FK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_suppliers.id"},
+            {"name": "sku", "type": "VARCHAR(50)", "key": "UK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Código SKU único"},
+            {"name": "name", "type": "VARCHAR(255)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Nombre producto"},
+            {"name": "description", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Descripción detallada"},
+            {"name": "current_price", "type": "DECIMAL(10,2)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Precio actual"},
+            {"name": "current_stock", "type": "INT", "key": "", "null": "NO", "default": "0", "auto": "NO", "desc": "Stock disponible"}
+        ]
+    },
+    "tb_reviews": {
+        "type": "TABLE",
+        "category": "Operativa / Clientes",
+        "rows": "920",
+        "status": "Poblada (100%)",
+        "note": "Calificaciones (1-5) y reseñas verificadas de compradores",
+        "desc": "Tabla de entidad tb_reviews del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Reseña ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "product_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_products.id"},
+            {"name": "rating", "type": "INT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Calificación (1-5)"},
+            {"name": "comment", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Comentario"},
+            {"name": "created_at", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha reseña"}
+        ]
+    },
+    "tb_shippings": {
+        "type": "TABLE",
+        "category": "Operativa / Logística",
+        "rows": "540",
+        "status": "Poblada (100%)",
+        "note": "Guías de rastreo (UK) y paqueterías asignadas a órdenes",
+        "desc": "Tabla de entidad tb_shippings del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Envío ID"},
+            {"name": "order_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_orders.id"},
+            {"name": "tracking_number", "type": "VARCHAR(50)", "key": "UK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Número guía"},
+            {"name": "carrier", "type": "VARCHAR(50)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Paquetería"},
+            {"name": "status", "type": "VARCHAR(30)", "key": "", "null": "YES", "default": "in_transit", "auto": "NO", "desc": "Estado de envío"},
+            {"name": "shipped_at", "type": "DATETIME", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Fecha despacho"},
+            {"name": "delivered_at", "type": "DATETIME", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Fecha entrega"}
+        ]
+    },
+    "tb_subcategories": {
+        "type": "TABLE",
+        "category": "Catálogo Jerárquico",
+        "rows": "250",
+        "status": "Poblada (100%)",
+        "note": "Subcategorías vinculadas a tb_categories (mín. 5 productos c/u)",
+        "desc": "Tabla de entidad tb_subcategories del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Subcategoría ID"},
+            {"name": "category_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_categories.id"},
+            {"name": "name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Nombre subcategoría"},
+            {"name": "description", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Descripción"}
+        ]
+    },
+    "tb_suppliers": {
+        "type": "TABLE",
+        "category": "Catálogo / Proveedores",
+        "rows": "45",
+        "status": "Poblada (100%)",
+        "note": "Empresas proveedoras activas vinculadas al catálogo de productos",
+        "desc": "Tabla de entidad tb_suppliers del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Proveedor ID"},
+            {"name": "company_name", "type": "VARCHAR(100)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Empresa proveedor"},
+            {"name": "contact_name", "type": "VARCHAR(100)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Contacto"},
+            {"name": "email", "type": "VARCHAR(100)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Correo"},
+            {"name": "phone", "type": "VARCHAR(20)", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Teléfono"},
+            {"name": "address", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Dirección fiscal"}
+        ]
+    },
+    "tb_transactions": {
+        "type": "TABLE",
+        "category": "Financiera / Pagos",
+        "rows": "540",
+        "status": "Poblada (100%)",
+        "note": "Códigos de autorización y respuestas de pasarela por pago",
+        "desc": "Tabla de entidad tb_transactions del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Transacción ID"},
+            {"name": "payment_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_payments.id"},
+            {"name": "transaction_code", "type": "VARCHAR(100)", "key": "UK", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Código pasarela"},
+            {"name": "gateway_response", "type": "TEXT", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Respuesta pasarela"},
+            {"name": "created_at", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha transacción"}
+        ]
+    },
+    "tb_users": {
+        "type": "TABLE",
+        "category": "Núcleo / Identidad",
+        "rows": "7,500",
+        "status": "Poblada (100%)",
+        "note": "7,500 cuentas con estado normalizado ('ACTIVE','INACTIVE','SUSPENDED')",
+        "desc": "Tabla de entidad tb_users del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Usuario ID"},
+            {"name": "first_name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Primer nombre"},
+            {"name": "last_name", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Apellidos"},
+            {"name": "email", "type": "VARCHAR(100)", "key": "UK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Email acceso"},
+            {"name": "nickname", "type": "VARCHAR(50)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Alias público"},
+            {"name": "password_hash", "type": "VARCHAR(255)", "key": "", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Hash contraseña"},
+            {"name": "status", "type": "ENUM('ACTIVE','INACTIVE','SUSPENDED')", "key": "", "null": "YES", "default": "ACTIVE", "auto": "NO", "desc": "Estado cuenta (Normalizado a mayúsculas)"},
+            {"name": "created_at", "type": "TIMESTAMP", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Registro"},
+            {"name": "last_login", "type": "TIMESTAMP", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Último acceso"},
+            {"name": "updated_at", "type": "TIMESTAMP", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Modificación"},
+            {"name": "deleted_at", "type": "TIMESTAMP", "key": "", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Baja lógica (soft delete)"}
+        ]
+    },
+    "tb_wishlist_items": {
+        "type": "TABLE",
+        "category": "Operativa / Clientes",
+        "rows": "780",
+        "status": "Poblada (Activa)",
+        "note": "Productos guardados en listas de deseos de los compradores",
+        "desc": "Tabla de entidad tb_wishlist_items del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Ítem lista ID"},
+            {"name": "wishlist_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_wishlists.id"},
+            {"name": "product_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_products.id"}
+        ]
+    },
+    "tb_wishlists": {
+        "type": "TABLE",
+        "category": "Operativa / Clientes",
+        "rows": "410",
+        "status": "Poblada (Activa)",
+        "note": "Listas de favoritos creadas por usuarios registrados",
+        "desc": "Tabla de entidad tb_wishlists del esquema db_test.",
+        "columns": [
+            {"name": "id", "type": "INT", "key": "PK", "null": "NO", "default": "NULL", "auto": "YES", "desc": "Lista deseos ID"},
+            {"name": "user_id", "type": "INT", "key": "FK", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Clave Foránea -> tb_users.id"},
+            {"name": "name", "type": "VARCHAR(50)", "key": "", "null": "YES", "default": "Favoritos", "auto": "NO", "desc": "Nombre lista"},
+            {"name": "created_at", "type": "DATETIME", "key": "", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha creación"}
+        ]
+    }
+};
+
+// 3. EXACT 26 VIEWS (1 ANALYTICAL + 25 TRACEABILITY VIEWS)
+const viewsData = {
+    "vw_products_by_category": {
+        "type": "VIEW",
+        "desc": "Vista analítica de catálogo: Agrupa productos por categoría, calculando acumulados de stock y estadísticas de precio.",
+        "sql": "CREATE VIEW `vw_products_by_category` AS\nSELECT `c`.`id` AS `category_id`, `c`.`name` AS `category_name`,\nCOUNT(`p`.`id`) AS `total_products`,\nIFNULL(SUM(`p`.`current_stock`),0) AS `total_stock`,\nIFNULL(AVG(`p`.`current_price`),0.00) AS `avg_price`,\nIFNULL(MIN(`p`.`current_price`),0.00) AS `min_price`,\nIFNULL(MAX(`p`.`current_price`),0.00) AS `max_price`\nFROM `tb_categories` `c`\nLEFT JOIN `tb_subcategories` `s` ON `c`.`id` = `s`.`category_id`\nLEFT JOIN `tb_products` `p` ON `s`.`id` = `p`.`subcategory_id`\nGROUP BY `c`.`id`, `c`.`name`;",
+        "columns": [
+            {"name": "category_id", "type": "INT", "key": "VIEW", "null": "NO", "default": "0", "auto": "NO", "desc": "ID de categoría principal"},
+            {"name": "category_name", "type": "VARCHAR(50)", "key": "VIEW", "null": "NO", "default": "NULL", "auto": "NO", "desc": "Nombre de categoría"},
+            {"name": "total_products", "type": "BIGINT", "key": "VIEW", "null": "NO", "default": "0", "auto": "NO", "desc": "Conteo total de productos"},
+            {"name": "total_stock", "type": "DECIMAL", "key": "VIEW", "null": "NO", "default": "0", "auto": "NO", "desc": "Total unidades en inventario"},
+            {"name": "avg_price", "type": "DECIMAL(10,2)", "key": "VIEW", "null": "NO", "default": "0.00", "auto": "NO", "desc": "Precio promedio"},
+            {"name": "min_price", "type": "DECIMAL(10,2)", "key": "VIEW", "null": "NO", "default": "0.00", "auto": "NO", "desc": "Precio mínimo"},
+            {"name": "max_price", "type": "DECIMAL(10,2)", "key": "VIEW", "null": "NO", "default": "0.00", "auto": "NO", "desc": "Precio máximo"}
+        ]
+    }
+};
+
+Object.keys(dbData).forEach(tbl => {
+    const vName = tbl === "tb_logs" ? "vw_traceability" : tbl.replace("tb_", "vw_traceability_");
+    const origCols = dbData[tbl].columns;
+    let vCols = origCols.map(c => ({...c, key: "VIEW", desc: `${c.desc} (Columna nativa)`}));
+    vCols.push(
+        {"name": "operation_type", "type": "ENUM('INSERT','UPDATE','DELETE')", "key": "VIEW", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Operación DML registrada en tb_logs"},
+        {"name": "user_connection", "type": "VARCHAR(100)", "key": "VIEW", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Usuario MySQL que ejecutó el cambio"},
+        {"name": "operation_date", "type": "TIMESTAMP", "key": "VIEW", "null": "YES", "default": "CURRENT_TIMESTAMP", "auto": "NO", "desc": "Fecha y hora del cambio auditado"},
+        {"name": "log_description", "type": "TEXT", "key": "VIEW", "null": "YES", "default": "NULL", "auto": "NO", "desc": "Detalle de auditoría de tb_logs"}
+    );
+
+    viewsData[vName] = {
+        "type": "VIEW",
+        "desc": `Vista de Trazabilidad: Cruza los registros de ${tbl} con la bitácora tb_logs para auditoría completa.`,
+        "sql": `CREATE VIEW \`${vName}\` AS\nSELECT t.*, l.operation_type, l.user_connection, l.operation_date, l.description AS log_description\nFROM \`${tbl}\` t\nLEFT JOIN \`tb_logs\` l ON l.table_name = '${tbl}';`,
+        "columns": vCols
+    };
+});
+
+// 4. ALL 72 TRIGGERS (24 OPERATIONAL TABLES x 3 DML EVENTS)
+const triggersData = {};
+Object.keys(dbData).sort().forEach(tbl => {
+    if (tbl !== 'tb_logs') {
+        const pkCol = dbData[tbl].columns.find(c => c.key === 'PK')?.name || 'id';
+        triggersData[tbl] = [
+            {
+                "name": `trg_${tbl}_after_insert`,
+                "moment": "AFTER",
+                "event": "INSERT",
+                "code": `DELIMITER $$\nCREATE TRIGGER \`trg_${tbl}_after_insert\`\nAFTER INSERT ON \`${tbl}\` FOR EACH ROW\nBEGIN\n  INSERT INTO tb_logs (table_name, operation_type, user_connection, operation_date, description, status)\n  VALUES ('${tbl}', 'INSERT', USER(), NOW(), CONCAT('INSERT auditado en ID: ', NEW.${pkCol}), 'SUCCESS');\nEND$$\nDELIMITER ;`
+            },
+            {
+                "name": `trg_${tbl}_after_update`,
+                "moment": "AFTER",
+                "event": "UPDATE",
+                "code": `DELIMITER $$\nCREATE TRIGGER \`trg_${tbl}_after_update\`\nAFTER UPDATE ON \`${tbl}\` FOR EACH ROW\nBEGIN\n  INSERT INTO tb_logs (table_name, operation_type, user_connection, operation_date, description, status)\n  VALUES ('${tbl}', 'UPDATE', USER(), NOW(), CONCAT('UPDATE auditado en ID: ', NEW.${pkCol}), 'SUCCESS');\nEND$$\nDELIMITER ;`
+            },
+            {
+                "name": `trg_${tbl}_after_delete`,
+                "moment": "AFTER",
+                "event": "DELETE",
+                "code": `DELIMITER $$\nCREATE TRIGGER \`trg_${tbl}_after_delete\`\nAFTER DELETE ON \`${tbl}\` FOR EACH ROW\nBEGIN\n  INSERT INTO tb_logs (table_name, operation_type, user_connection, operation_date, description, status)\n  VALUES ('${tbl}', 'DELETE', USER(), NOW(), CONCAT('DELETE auditado en ID: ', OLD.${pkCol}), 'SUCCESS');\nEND$$\nDELIMITER ;`
+            }
+        ];
+    }
+});
+
+// STATE
+let activeObject = "tb_products";
+let sidebarFilter = "ALL";
+let activeSubtab = "cols";
+let showPasswords = false;
+let erdScale = 0.85;
+let selectedErdNode = null;
+
+function getAllObjects() {
+    return { ...dbData, ...viewsData };
+}
+
+// NAVIGATION
+function switchTab(tabName) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.view-section').forEach(sec => {
+        sec.classList.toggle('active', sec.id === `view-${tabName}`);
+    });
+    if (tabName === 'erd') {
+        renderERD();
+    }
+}
+
+function handleGlobalSearch() {
+    renderSidebar();
+    renderAllTriggers();
+    renderPopulationTable();
+}
+
+// SIDEBAR & DICTIONARY EXPLORER
+function setSidebarFilter(type) {
+    sidebarFilter = type;
+    document.querySelectorAll('.filter-pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.filter === type);
+    });
+    renderSidebar();
+}
+
+function renderSidebar() {
+    const list = document.getElementById('sidebarList');
+    const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+    const all = getAllObjects();
+    list.innerHTML = "";
+
+    Object.keys(all).sort().forEach(key => {
+        const obj = all[key];
+        if (sidebarFilter !== "ALL" && obj.type !== sidebarFilter) return;
+
+        const matchName = key.toLowerCase().includes(query);
+        const matchCol = obj.columns.some(c => c.name.toLowerCase().includes(query));
+        if (query && !matchName && !matchCol) return;
+
+        const el = document.createElement('div');
+        el.className = `obj-item ${key === activeObject ? 'active' : ''}`;
+        el.onclick = () => {
+            activeObject = key;
+            renderSidebar();
+            renderDetail();
+        };
+
+        const rowInfo = obj.type === "TABLE" ? `${obj.rows} regs` : `${obj.columns.length} cols`;
+        const tagClass = obj.type === "TABLE" ? "tag-table" : "tag-view";
+
+        el.innerHTML = `
+            <div class="obj-name-wrap">
+                <span class="obj-name">${key}</span>
+                <span class="obj-meta-mini">${obj.columns.length} columnas &bull; ${rowInfo}</span>
+            </div>
+            <span class="tag-type ${tagClass}">${obj.type}</span>
+        `;
+        list.appendChild(el);
+    });
+}
+
+function switchSubtab(sub) {
+    activeSubtab = sub;
+    document.getElementById('subtab-cols').classList.toggle('active', sub === 'cols');
+    document.getElementById('subtab-code').classList.toggle('active', sub === 'code');
+    document.getElementById('subpanel-cols').style.display = sub === 'cols' ? 'block' : 'none';
+    document.getElementById('subpanel-code').style.display = sub === 'code' ? 'block' : 'none';
+}
+
+function renderDetail() {
+    const all = getAllObjects();
+    const obj = all[activeObject];
+    if (!obj) return;
+
+    const isView = obj.type === "VIEW";
+    document.getElementById('detTitle').innerHTML = `
+        ${activeObject}
+        <span class="tag-type ${isView ? 'tag-view' : 'tag-table'}">${isView ? 'VIEW SQL' : 'TABLA INNODB'}</span>
+    `;
+    document.getElementById('detDesc').textContent = obj.desc;
+
+    const badgeWrap = document.getElementById('detStatsBadge');
+    if (isView) {
+        badgeWrap.innerHTML = `<span class="row-count-badge">Vista Dinámica &bull; ${obj.columns.length} Columnas</span>`;
+        document.getElementById('subtab-code').textContent = "Definición SQL (CREATE VIEW)";
+    } else {
+        badgeWrap.innerHTML = `<span class="row-count-badge">Registros Poblados: ${obj.rows} (${obj.status})</span>`;
+        const tCount = triggersData[activeObject] ? triggersData[activeObject].length : 0;
+        document.getElementById('subtab-code').textContent = `Triggers Auditados (${tCount})`;
+    }
+
+    // Columns
+    const tbody = document.getElementById('detColsBody');
+    tbody.innerHTML = "";
+    obj.columns.forEach(col => {
+        let keyHtml = '<span style="color:#94a3b8;">&mdash;</span>';
+        if (col.key === 'PK') keyHtml = '<span class="key-badge key-pk">PK</span>';
+        else if (col.key === 'FK') keyHtml = '<span class="key-badge key-fk">FK</span>';
+        else if (col.key === 'UK') keyHtml = '<span class="key-badge key-uk">UK</span>';
+        else if (col.key === 'VIEW') keyHtml = '<span class="key-badge key-view">VIEW</span>';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="mono" style="font-weight:600;">${col.name}</td>
+            <td class="datatype">${col.type}</td>
+            <td>${keyHtml}</td>
+            <td>${col.null}</td>
+            <td class="mono" style="font-size:12px; color:#64748b;">${col.default}</td>
+            <td>${col.auto}</td>
+            <td style="color:#334155;">${col.desc}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Code / Triggers Subpanel
+    const codeContainer = document.getElementById('detCodeContainer');
+    if (isView) {
+        codeContainer.innerHTML = `
+            <div class="sql-block-wrap">
+                <button class="copy-btn" id="copyViewBtn">Copiar SQL</button>
+                <pre class="sql-block" id="viewSqlPre"></pre>
+            </div>
+        `;
+        document.getElementById('viewSqlPre').textContent = obj.sql;
+        document.getElementById('copyViewBtn').onclick = () => copyToClipboardSafe(obj.sql, `SQL de ${activeObject} copiado.`);
+    } else {
+        const list = triggersData[activeObject] || [];
+        if (list.length === 0) {
+            codeContainer.innerHTML = `<div style="padding:28px; text-align:center; color:var(--text-muted);">La tabla <code>${activeObject}</code> es la bitácora receptora central de los 72 triggers DML (sin triggers propios para evitar recursividad).</div>`;
+        } else {
+            let html = `<div class="trigger-items-grid">`;
+            list.forEach(t => {
+                const evClass = t.event === 'INSERT' ? 'ev-insert' : (t.event === 'UPDATE' ? 'ev-update' : 'ev-delete');
+                html += `
+                    <div class="trigger-box">
+                        <div class="trigger-box-top">
+                            <code>${t.name}</code>
+                            <span class="event-tag ${evClass}">${t.moment} ${t.event}</span>
+                        </div>
+                        <pre class="trigger-code">${t.code}</pre>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            codeContainer.innerHTML = html;
+        }
+    }
+}
+
+// 5. ALL 72 TRIGGERS MASTER RENDERER
+function renderAllTriggers() {
+    const container = document.getElementById('allTriggersContainer');
+    const evFilter = document.getElementById('triggerEventFilter').value;
+    const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+    container.innerHTML = "";
+
+    Object.keys(triggersData).sort().forEach((tbl, idx) => {
+        const items = triggersData[tbl].filter(t => {
+            if (evFilter !== "ALL" && t.event !== evFilter) return false;
+            if (query && !tbl.toLowerCase().includes(query) && !t.name.toLowerCase().includes(query)) return false;
+            return true;
+        });
+
+        if (items.length === 0) return;
+
+        const card = document.createElement('div');
+        card.className = "trigger-group-card";
+        let cardsHtml = "";
+        items.forEach(t => {
+            const evClass = t.event === 'INSERT' ? 'ev-insert' : (t.event === 'UPDATE' ? 'ev-update' : 'ev-delete');
+            cardsHtml += `
+                <div class="trigger-box">
+                    <div class="trigger-box-top">
+                        <code>${t.name}</code>
+                        <span class="event-tag ${evClass}">${t.moment} ${t.event}</span>
+                    </div>
+                    <pre class="trigger-code">${t.code}</pre>
+                </div>
+            `;
+        });
+
+        card.innerHTML = `
+            <div class="trigger-group-head">
+                <h3>#${idx + 1} &bull; Tabla Auditada: <span>${tbl}</span></h3>
+                <span class="tag-type tag-table">${items.length} trigger(s) mostrado(s)</span>
+            </div>
+            <div class="trigger-items-grid">${cardsHtml}</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function copyAllTriggersSQL() {
+    let fullSql = "-- SCRIPT COMPLETO DE 72 TRIGGERS DE AUDITORÍA - db_test\n-- Autor: Yuliana Mendoza (Matrícula: 240808)\n\n";
+    Object.keys(triggersData).sort().forEach(tbl => {
+        fullSql += `-- Tabla: ${tbl}\n`;
+        triggersData[tbl].forEach(t => {
+            fullSql += t.code + "\n\n";
+        });
+    });
+    copyToClipboardSafe(fullSql, "Script SQL completo con los 72 triggers copiado al portapapeles.");
+}
+
+// 6. INTERACTIVE ERD RENDERER (ALL 25 TABLES + SVG FOREIGN KEY LINES)
+const erdPositions = {
+    "tb_users": { x: 40, y: 40 },
+    "tb_people": { x: 360, y: 40 },
+    "tb_audit_logins": { x: 680, y: 40 },
+    "tb_notifications": { x: 1000, y: 40 },
+    "tb_addresses": { x: 40, y: 370 },
+    "tb_payment_methods": { x: 360, y: 370 },
+    "tb_carts": { x: 680, y: 370 },
+    "tb_wishlists": { x: 1000, y: 370 },
+    "tb_orders": { x: 40, y: 690 },
+    "tb_payments": { x: 360, y: 690 },
+    "tb_transactions": { x: 680, y: 690 },
+    "tb_shippings": { x: 1000, y: 690 },
+    "tb_order_details": { x: 40, y: 1020 },
+    "tb_order_coupons": { x: 360, y: 1020 },
+    "tb_coupons": { x: 680, y: 1020 },
+    "tb_cart_items": { x: 1000, y: 1020 },
+    "tb_products": { x: 1380, y: 520 },
+    "tb_subcategories": { x: 1740, y: 300 },
+    "tb_categories": { x: 2100, y: 300 },
+    "tb_suppliers": { x: 1740, y: 620 },
+    "tb_discounts": { x: 1740, y: 920 },
+    "tb_inventory_movements": { x: 1380, y: 920 },
+    "tb_reviews": { x: 1380, y: 180 },
+    "tb_wishlist_items": { x: 1380, y: 1240 },
+    "tb_logs": { x: 2100, y: 740 }
+};
+
+const erdRelations = [
+    ["tb_people", "tb_users"],
+    ["tb_audit_logins", "tb_users"],
+    ["tb_notifications", "tb_users"],
+    ["tb_addresses", "tb_users"],
+    ["tb_payment_methods", "tb_users"],
+    ["tb_carts", "tb_users"],
+    ["tb_wishlists", "tb_users"],
+    ["tb_orders", "tb_users"],
+    ["tb_orders", "tb_addresses"],
+    ["tb_payments", "tb_orders"],
+    ["tb_payments", "tb_payment_methods"],
+    ["tb_transactions", "tb_payments"],
+    ["tb_shippings", "tb_orders"],
+    ["tb_order_details", "tb_orders"],
+    ["tb_order_details", "tb_products"],
+    ["tb_order_coupons", "tb_orders"],
+    ["tb_order_coupons", "tb_coupons"],
+    ["tb_cart_items", "tb_carts"],
+    ["tb_cart_items", "tb_products"],
+    ["tb_wishlist_items", "tb_wishlists"],
+    ["tb_wishlist_items", "tb_products"],
+    ["tb_products", "tb_subcategories"],
+    ["tb_products", "tb_suppliers"],
+    ["tb_subcategories", "tb_categories"],
+    ["tb_discounts", "tb_products"],
+    ["tb_inventory_movements", "tb_products"],
+    ["tb_reviews", "tb_users"],
+    ["tb_reviews", "tb_products"]
+];
+
+function renderERD() {
+    const nodesLayer = document.getElementById('erdNodesLayer');
+    const svg = document.getElementById('erd-svg-lines');
+    nodesLayer.innerHTML = "";
+    svg.innerHTML = "";
+
+    Object.keys(dbData).forEach(tbl => {
+        const pos = erdPositions[tbl] || { x: 50, y: 50 };
+        const obj = dbData[tbl];
+        const node = document.createElement('div');
+        node.className = `erd-node ${selectedErdNode === tbl ? 'highlighted' : ''}`;
+        node.style.left = pos.x + "px";
+        node.style.top = pos.y + "px";
+        node.onclick = () => {
+            selectedErdNode = (selectedErdNode === tbl) ? null : tbl;
+            renderERD();
+        };
+
+        let colsHtml = "";
+        obj.columns.forEach(c => {
+            let badge = "";
+            if (c.key === "PK") badge = '<span class="key-badge key-pk" style="margin-right:4px;">PK</span>';
+            else if (c.key === "FK") badge = '<span class="key-badge key-fk" style="margin-right:4px;">FK</span>';
+            else if (c.key === "UK") badge = '<span class="key-badge key-uk" style="margin-right:4px;">UK</span>';
+            colsHtml += `
+                <div class="erd-col-line">
+                    <span class="mono">${badge}${c.name}</span>
+                    <span class="datatype" style="font-size:10px;">${c.type}</span>
+                </div>
+            `;
+        });
+
+        node.innerHTML = `
+            <div class="erd-node-head">
+                <span>${tbl}</span>
+                <span class="rows-mini">${obj.rows}</span>
+            </div>
+            <div class="erd-node-cols">${colsHtml}</div>
+        `;
+        nodesLayer.appendChild(node);
+    });
+
+    // Draw SVG Connectors
+    erdRelations.forEach(([fromTbl, toTbl]) => {
+        const p1 = erdPositions[fromTbl];
+        const p2 = erdPositions[toTbl];
+        if (!p1 || !p2) return;
+
+        const x1 = p1.x + 132;
+        const y1 = p1.y + 45;
+        const x2 = p2.x + 132;
+        const y2 = p2.y + 45;
+
+        const isHighlighted = selectedErdNode && (selectedErdNode === fromTbl || selectedErdNode === toTbl);
+        const strokeColor = isHighlighted ? "#0f766e" : "#94a3b8";
+        const strokeWidth = isHighlighted ? "2.6" : "1.4";
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const midX = (x1 + x2) / 2;
+        const d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", strokeColor);
+        path.setAttribute("stroke-width", strokeWidth);
+        if (!isHighlighted) path.setAttribute("stroke-dasharray", "5,4");
+        svg.appendChild(path);
+    });
+
+    document.getElementById('erdStage').style.transform = `scale(${erdScale})`;
+    document.getElementById('zoomLabel').textContent = Math.round(erdScale * 100) + "%";
+}
+
+function zoomERD(delta) {
+    erdScale = Math.min(1.4, Math.max(0.45, +(erdScale + delta).toFixed(2)));
+    renderERD();
+}
+
+function resetERD() {
+    erdScale = 0.85;
+    selectedErdNode = null;
+    renderERD();
+}
+
+// 7. USERS & POPULATION TABLES
+function renderUsersTable() {
+    const tbody = document.getElementById('usersTableBody');
+    const roleFilter = document.getElementById('roleFilterSelect').value;
+    tbody.innerHTML = "";
+
+    mysqlUsers
+        .filter(u => roleFilter === "ALL" || u.mysqlRole === roleFilter)
+        .forEach((u, i) => {
+            const tr = document.createElement('tr');
+            if (u.isOwner) tr.className = "highlight-row";
+            const passDisplay = showPasswords ? u.pass : "•".repeat(u.pass.length);
+            tr.innerHTML = `
+                <td>${i + 1}</td>
+                <td class="mono" style="font-weight:700;">${u.user}</td>
+                <td><strong>${u.fullName}</strong> ${u.isOwner ? '<span class="key-badge key-pk" style="margin-left:6px;">Autora / Matrícula 240808</span>' : ''}</td>
+                <td>${u.assignedRole}</td>
+                <td><span class="tag-type ${u.mysqlRole === 'rol_admin' ? 'tag-table' : 'tag-view'}">${u.mysqlRole}</span></td>
+                <td class="mono">${passDisplay}</td>
+                <td><span class="key-badge key-view">ACTIVO</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+}
+
+function togglePasswords() {
+    showPasswords = !showPasswords;
+    document.getElementById('togglePassBtn').textContent = showPasswords ? "Ocultar Contraseñas" : "Mostrar Contraseñas";
+    renderUsersTable();
+}
+
+function renderPopulationTable() {
+    const tbody = document.getElementById('populationTableBody');
+    const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+    tbody.innerHTML = "";
+
+    Object.keys(dbData).sort().forEach((tbl, idx) => {
+        const obj = dbData[tbl];
+        if (query && !tbl.toLowerCase().includes(query) && !obj.category.toLowerCase().includes(query)) return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td class="mono" style="font-weight:700;">${tbl}</td>
+            <td>${obj.category}</td>
+            <td class="mono" style="font-weight:800; color:var(--brand-teal-dark);">${obj.rows}</td>
+            <td><span class="key-badge key-view">${obj.status}</span></td>
+            <td style="color:var(--text-secondary);">${obj.note}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// INITIALIZE
+renderSidebar();
+renderDetail();
+renderAllTriggers();
+renderUsersTable();
+renderPopulationTable();
+</script>
+</body>
+</html>
